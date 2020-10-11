@@ -1,0 +1,8 @@
+{
+  "name": "bfg-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/bgf-s/bfg-js",
+  "author": "bfg",
+  "license": "MIT"
+}
