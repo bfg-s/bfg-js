@@ -13,7 +13,7 @@ require('bfg-js');
 
 app.provider({
     register () {
-        console.log(`Run application v${app.ver}...`);
+        console.log(`Run application...`);
     }
 })
 
