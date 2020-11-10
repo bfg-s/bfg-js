@@ -1,9 +1,9 @@
 # Install
 
 ```bash
-npm install -g bfg-js
+npm install bfg-js
 // or
-yarn global add bfg-js
+yarn add bfg-js
 ``` 
 
 # Usage
