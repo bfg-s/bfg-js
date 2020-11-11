@@ -1,7 +1,8 @@
 import {ServiceProvider, ServiceProviderInterface} from "./ServiceProvider";
 
 interface _App<T> {
-    bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
+    bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean, compute?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
+    compute(key: string, val: any): ApplicationContainer;
     get(name: string|null, ...data: Array<any>): object;
     has(name: string): boolean;
     forget(name: string): ApplicationContainer;
@@ -23,6 +24,7 @@ interface appItem {
     data: any|null,
     resolve: any|null,
     resolved: boolean,
+    compute: boolean,
     etc?: appItem,
     on_bind?: Array<Function>,
     on_get?: Array<Function>,
@@ -35,6 +37,7 @@ interface appItemCollect {
 }
 
 type Id<T> = T extends infer U ? { [K in keyof U]: U[K] extends (...args: any) => any ? ReturnType<U[K]> : U[K]} : never;
+type Id2<T> = T extends infer U ? { [K in keyof U]: U[K] extends (...args: any) => any ? ReturnType<U[K]> : U[K]} : never;
 
 export declare type ApplicationContainer<T = {}> = Readonly<T> & _App<T> & _Manipulators;
 
@@ -77,19 +80,14 @@ function makeApp(): ApplicationContainer {
         if (prop in items) {
             let i = items[prop];
             if (!('data' in i)) return null;
-            if (i.resolve && !i.resolved) {
+            if (i.compute && typeof i.data === 'function') {
+                r = i.data(proxxy, ...data);
+            } else if (i.resolve && !i.resolved) {
                 if (typeof i.resolve === 'function') items[prop].data = (i.resolve)(proxxy, ...data);
                 else items[prop].data = i.resolve;
                 r = items[prop].data = eventFn(prop, 'resolve', items[prop].data);
             } else {
                 r = items[prop].data;
-                if (typeof r === 'function' && !('proxy' in r)) {
-                    try {
-                        r = r(proxxy, ...data);
-                    } catch (e) {
-                        r.proxy = true;
-                    }
-                }
             }
             items[prop].resolved = true;
             r = eventFn(prop, 'get', r);
@@ -98,8 +96,8 @@ function makeApp(): ApplicationContainer {
     };
     const manipulators: Function = (target: any, proxxy: ApplicationContainer) => {
         return {
-            bind (name: string, data: any, resolve: boolean = false) {
-                let dataItem: appItem = {data: resolve ? null : data, resolve: resolve ? data : false, resolved: false};
+            bind (name: string, data: any, resolve: boolean = false, compute: boolean = false) {
+                let dataItem: appItem = {data: resolve ? null : data, resolve: resolve ? data : false, resolved: false, compute};
                 if ((name in items)) {
 
                     if (!('data' in items[name])) {
@@ -112,6 +110,9 @@ function makeApp(): ApplicationContainer {
                 }
                 else { items[name] = eventFn(name, 'bind', dataItem); }
                 return proxxy;
+            },
+            compute (name: string, data: any) {
+                return proxxy.bind(name, data, false, true);
             },
             get (name: string|null = null, ...data: Array<any>) {
                 return name ? getter(name, ...data) : items;

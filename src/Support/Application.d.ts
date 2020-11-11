@@ -1,6 +1,7 @@
 import { ServiceProviderInterface } from "./ServiceProvider";
 interface _App<T> {
-    bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
+    bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean, compute?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
+    compute(key: string, val: any): ApplicationContainer;
     get(name: string | null, ...data: Array<any>): object;
     has(name: string): boolean;
     forget(name: string): ApplicationContainer;

@@ -10,7 +10,7 @@ declare global {
         app: ApplicationContainer
     }
 }
-//
+
 // App.on('*', '*', (data: any, app: ApplicationContainer, event: EventAppInfo) => {
 //     console.log(`Fire event [${event.event}] on name [${event.name}]`);
 // });
