@@ -5,6 +5,53 @@ interface anyItems {
 export class Str {
 
     /**
+     * Replace tags in string by params
+     * @param target
+     * @param params
+     * @param markers
+     */
+    replace_tags (target: string, params: Object, markers: Array<string>|string = "{*}") {
+        markers = !Array.isArray(markers) ? markers.split('*') : markers;
+        Object.keys(params).map(k => {
+            target = target.replace(
+                new RegExp(`${markers[0]}${k}${markers[1]}`.replace(
+                    new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\#-]', 'g'), '\\$&'),
+                    'g'
+                ),
+                (params as any)[k]
+            );
+        });
+        return target;
+    }
+
+    /**
+     * Check end string with
+     * @param str
+     * @param end
+     */
+    end_with (str: string, end: string) {
+        return this.is(`*${end}`, str);
+    }
+
+    /**
+     * Check start string with
+     * @param str
+     * @param start
+     */
+    start_with (str: string, start: string) {
+        return this.is(`${start}*`, str);
+    }
+
+    /**
+     * Check has in string
+     * @param str
+     * @param contain
+     */
+    contains (str: string, contain: string) {
+        return this.is(`*${contain}*`, str);
+    }
+
+    /**
      * Get dir name
      * @param path
      */

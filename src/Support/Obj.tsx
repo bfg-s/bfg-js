@@ -1,10 +1,12 @@
 import {Str} from "./Str";
+import {ApplicationContainer} from "./Application";
 
 interface anyItems {
     [key: string]: any;
 }
 
 export interface ObjInterface {
+    app: ApplicationContainer
     flip<T>(trans: T): T
     first_key (target: Array<any>|object): PropertyKey
     last_key (target: Array<any>|object): PropertyKey
@@ -21,12 +23,37 @@ export interface ObjInterface {
 
 export class Obj implements ObjInterface {
 
+    app: ApplicationContainer;
+
+    constructor(app: ApplicationContainer) {
+        this.app = app;
+    }
+
+    get_start_with (target: anyItems, start: string) {
+        let result: any = null;
+        Object.keys(target).map((b) => {
+            if (!result && this.app.str.start_with(target[b], start)) {
+                result = target[b];
+            }
+        });
+        return result;
+    }
+
+    get_end_with (target: anyItems, start: string) {
+        let result: any = null;
+        Object.keys(target).map((b) => {
+            if (!result && window.app.str.end_with(target[b], start)) {
+                result = target[b];
+            }
+        });
+        return result;
+    }
+
     /**
      * Flip object
      * @param trans
      */
-    flip<T extends anyItems>(trans: T)
-    {
+    flip<T extends anyItems>(trans: T) {
         let key, tmp_ar: T = {} as any;
 
         for ( key in trans )

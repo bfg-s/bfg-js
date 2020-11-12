@@ -38,7 +38,7 @@ export class Kernel extends ServiceProvider implements KernelInterface {
         this.app.bind('token', Kernel.token);
         this.app.bind('os', Kernel.os, true);
         this.app.bind('str', new Str());
-        this.app.bind('obj', new Obj());
+        this.app.bind('obj', new Obj(this.app));
         this.app.bind('num', new Num());
     }
 

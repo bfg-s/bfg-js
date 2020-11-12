@@ -20,7 +20,7 @@ interface _Manipulators {
     [key: string]: any;
 }
 declare type Id<T> = T extends infer U ? {
-    [K in keyof U]: U[K] extends (...args: any) => any ? ReturnType<U[K]> : U[K];
+    [K in keyof U]: U[K];
 } : never;
 export declare type ApplicationContainer<T = {}> = Readonly<T> & _App<T> & _Manipulators;
 export interface EventAppInfo {

@@ -3,6 +3,31 @@ interface anyItems {
 }
 export declare class Str {
     /**
+     * Replace tags in string by params
+     * @param target
+     * @param params
+     * @param markers
+     */
+    replace_tags(target: string, params: Object, markers?: Array<string> | string): string;
+    /**
+     * Check end string with
+     * @param str
+     * @param end
+     */
+    end_with(str: string, end: string): boolean;
+    /**
+     * Check start string with
+     * @param str
+     * @param start
+     */
+    start_with(str: string, start: string): boolean;
+    /**
+     * Check has in string
+     * @param str
+     * @param contain
+     */
+    contains(str: string, contain: string): boolean;
+    /**
      * Get dir name
      * @param path
      */

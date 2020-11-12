@@ -36,8 +36,7 @@ interface appItemCollect {
     [key: string]: appItem;
 }
 
-type Id<T> = T extends infer U ? { [K in keyof U]: U[K] extends (...args: any) => any ? ReturnType<U[K]> : U[K]} : never;
-type Id2<T> = T extends infer U ? { [K in keyof U]: U[K] extends (...args: any) => any ? ReturnType<U[K]> : U[K]} : never;
+type Id<T> = T extends infer U ? { [K in keyof U]: U[K]} : never;
 
 export declare type ApplicationContainer<T = {}> = Readonly<T> & _App<T> & _Manipulators;
 
@@ -97,6 +96,7 @@ function makeApp(): ApplicationContainer {
     const manipulators: Function = (target: any, proxxy: ApplicationContainer) => {
         return {
             bind (name: string, data: any, resolve: boolean = false, compute: boolean = false) {
+                //if (typeof data === 'object' && 'app' in data) data.app = target;
                 let dataItem: appItem = {data: resolve ? null : data, resolve: resolve ? data : false, resolved: false, compute};
                 if ((name in items)) {
 
@@ -218,26 +218,5 @@ function makeApp(): ApplicationContainer {
 
     return proxxy;
 }
-
-// (function() {
-//     let proxyInstances: any = new WeakSet()
-//     let originalProxy: any = Proxy
-//     Proxy = new Proxy(Proxy, {
-//         construct(target, args: any) {
-//             let newProxy = new originalProxy(...args)
-//             proxyInstances.add(newProxy)
-//             return newProxy
-//         },
-//         get: function(obj, prop) {
-//             if (prop == Symbol.hasInstance) {
-//                 return function(instance: any) {
-//                     return proxyInstances.has(instance)
-//                 }
-//             }
-//             // @ts-ignore
-//             return Reflect.get(...arguments)
-//         }
-//     })
-// })()
 
 export const App: ApplicationContainer = makeApp();

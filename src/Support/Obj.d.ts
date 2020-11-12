@@ -1,7 +1,9 @@
+import { ApplicationContainer } from "./Application";
 interface anyItems {
     [key: string]: any;
 }
 export interface ObjInterface {
+    app: ApplicationContainer;
     flip<T>(trans: T): T;
     first_key(target: Array<any> | object): PropertyKey;
     last_key(target: Array<any> | object): PropertyKey;
@@ -16,6 +18,10 @@ export interface ObjInterface {
     dot(obj: anyItems, tgt?: anyItems, path?: Array<any>, useBrackets?: boolean, keepArray?: boolean, separator?: string): object;
 }
 export declare class Obj implements ObjInterface {
+    app: ApplicationContainer;
+    constructor(app: ApplicationContainer);
+    get_start_with(target: anyItems, start: string): any;
+    get_end_with(target: anyItems, start: string): any;
     /**
      * Flip object
      * @param trans
