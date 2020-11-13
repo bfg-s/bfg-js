@@ -1,6 +1,6 @@
 {
   "name": "bfg-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "bundle/index.js",
   "repository": "https://github.com/bgf-s/bfg-js",
   "keywords": ["bfg", "xsaven", "script", "core"],
