@@ -4,24 +4,26 @@ interface anyItems {
 }
 export interface ObjInterface {
     app: ApplicationContainer;
+    get_start_with(target: anyItems, start: string): anyItems;
+    get_end_with(target: anyItems, start: string): anyItems;
     flip<T>(trans: T): T;
     first_key(target: Array<any> | object): PropertyKey;
     last_key(target: Array<any> | object): PropertyKey;
     first(target: anyItems): any;
     last(target: anyItems): any;
-    merge_recursive(target: anyItems, ...sources: Array<any>): object;
+    merge_recursive(target: anyItems, ...sources: Array<any>): anyItems;
     isClass(data: any): boolean;
     isArray(obj: any): boolean;
     isEmptyObject(val: object | Array<any>): boolean;
     isObject(val: any): boolean;
     isArrayOrObject(val: any): boolean;
-    dot(obj: anyItems, tgt?: anyItems, path?: Array<any>, useBrackets?: boolean, keepArray?: boolean, separator?: string): object;
+    dot(obj: anyItems, tgt?: anyItems, path?: Array<any>, useBrackets?: boolean, keepArray?: boolean, separator?: string): anyItems;
 }
 export declare class Obj implements ObjInterface {
     app: ApplicationContainer;
     constructor(app: ApplicationContainer);
     get_start_with(target: anyItems, start: string): any;
-    get_end_with(target: anyItems, start: string): any;
+    get_end_with(target: anyItems, end: string): any;
     /**
      * Flip object
      * @param trans

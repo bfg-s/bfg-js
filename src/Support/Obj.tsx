@@ -1,4 +1,3 @@
-import {Str} from "./Str";
 import {ApplicationContainer} from "./Application";
 
 interface anyItems {
@@ -7,18 +6,20 @@ interface anyItems {
 
 export interface ObjInterface {
     app: ApplicationContainer
+    get_start_with (target: anyItems, start: string): anyItems
+    get_end_with (target: anyItems, start: string): anyItems
     flip<T>(trans: T): T
     first_key (target: Array<any>|object): PropertyKey
     last_key (target: Array<any>|object): PropertyKey
     first (target: anyItems): any
     last (target: anyItems): any
-    merge_recursive(target: anyItems, ...sources: Array<any>): object
+    merge_recursive(target: anyItems, ...sources: Array<any>): anyItems
     isClass (data: any): boolean
     isArray (obj: any): boolean
     isEmptyObject (val: object|Array<any>): boolean
     isObject (val: any): boolean
     isArrayOrObject (val: any): boolean
-    dot (obj: anyItems, tgt?: anyItems, path?: Array<any>, useBrackets?: boolean, keepArray?: boolean, separator?: string): object
+    dot (obj: anyItems, tgt?: anyItems, path?: Array<any>, useBrackets?: boolean, keepArray?: boolean, separator?: string): anyItems
 }
 
 export class Obj implements ObjInterface {
@@ -39,10 +40,10 @@ export class Obj implements ObjInterface {
         return result;
     }
 
-    get_end_with (target: anyItems, start: string) {
+    get_end_with (target: anyItems, end: string) {
         let result: any = null;
         Object.keys(target).map((b) => {
-            if (!result && window.app.str.end_with(target[b], start)) {
+            if (!result && this.app.str.end_with(target[b], end)) {
                 result = target[b];
             }
         });
