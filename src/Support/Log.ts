@@ -17,8 +17,10 @@ export class Log implements LogInterface {
 
     constructor(public app: ApplicationContainer) {
         Log.glob = this;
-        Log.getConsole = (prop: string) => {
+        Log.getConsole = (prop: string, required: boolean = false) => {
             return (...data: Array<any>) => {
+                if (data[0] === '!') return (n: any, ...d:Array<any>) => Log.getConsole(prop)(...d);
+                if (!required && !app.dev) return ;
                 let c = this.app.console;
                 if (prop in c) {
                     c[prop](Log.glob.prompt, ...data);

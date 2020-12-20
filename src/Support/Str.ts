@@ -2,7 +2,26 @@ interface anyItems {
     [key: string]: any;
 }
 
+export interface StrInterface {
+    preg_match_all <T extends string>(pattern: RegExp, str: T): T
+    replace_tags <T extends string>(target: T, params: Object, markers: Array<T>|T): T
+}
+
 export class Str {
+
+    /**
+     * Preg match all how in PHP
+     * @param pattern
+     * @param str
+     */
+    preg_match_all (pattern: RegExp, str: string) {
+        let result: any;
+        let matches: Array<Array<any>> = [];
+        while ((result = pattern.exec(str)) !== null) {
+            matches.push(result);
+        }
+        return matches;
+    }
 
     /**
      * Replace tags in string by params

@@ -1,11 +1,15 @@
 import { ApplicationContainer } from "./Application";
-export interface ServiceProviderInterface {
-    app: ApplicationContainer;
-    register(): void;
-    boot(): void;
+export interface ServiceProviderInterface<T> {
+    app: T;
+    register?(): void;
+    boot?(): void;
 }
-export declare abstract class ServiceProvider implements ServiceProviderInterface {
-    abstract app: ApplicationContainer;
-    abstract register(): void;
-    abstract boot(): void;
+export interface ServiceProviderConstructor {
+    new <T extends ApplicationContainer>(app?: T): ServiceProvider<T>;
+}
+export declare abstract class ServiceProvider<T extends ApplicationContainer> implements ServiceProviderInterface<T> {
+    app: T;
+    name?: string | Function;
+    require?: Array<string>;
+    constructor(app: T);
 }

@@ -1,35 +1,30 @@
-import {ServiceProvider, ServiceProviderInterface} from "./ServiceProvider";
+import {ServiceProvider} from "./ServiceProvider";
+import {Str, StrInterface} from "./Str";
+import {Obj, ObjInterface} from "./Obj";
+import {Num, NumInterface} from "./Num";
+import {Log, LogInterface} from "./Log";
+import {EventCollect, EventInterface} from "./EventCollect";
+import {Json, JsonInterface} from "./Json";
 import {ApplicationContainer} from "./Application";
-import {Str} from "./Str";
-import {Obj} from "./Obj";
-import {Num} from "./Num";
-import {Log} from "./Log";
-import {EventCollect} from "./EventCollect";
 
-export interface KernelInterface extends ServiceProviderInterface {
-    start: Number
-    dev: boolean
+export interface KernelInterface {
     globalize(): void
 }
 
-export class Kernel extends ServiceProvider implements KernelInterface {
+interface anyObject {
+    [key: string]: any
+}
 
-    app: ApplicationContainer;
-
-    constructor(
-        public start: Number,
-        public dev: boolean = false
-    ) {
-        super();
-
-    }
+export class Kernel extends ServiceProvider<ApplicationContainer> implements KernelInterface {
 
     register(): void {
-
-        this.app.bind('start', this.start);
+        let dev = false;
+        if (process.env.NODE_ENV === 'development') {
+            dev = true;
+        }
+        this.app.bind('start', (new Date()).getTime());
         this.app.bind('env', process.env.NODE_ENV);
-        this.app.bind('local', process.env.NODE_ENV === 'development');
-        this.app.bind('dev', this.dev);
+        this.app.bind('dev', dev);
         this.app.bind('console', console);
         this.app.bind('event', new EventCollect());
         this.app.bind('system', Kernel.sys, true);
@@ -40,6 +35,19 @@ export class Kernel extends ServiceProvider implements KernelInterface {
         this.app.bind('str', new Str());
         this.app.bind('obj', new Obj(this.app));
         this.app.bind('num', new Num());
+        this.app.bind('json', new Json());
+        this.app.bind('data', {});
+
+        if (String(this.app.system) === 'browser') {
+            let bfg_json = document.getElementById('bfg-page-json');
+            if (bfg_json) {
+                let bfg_json_string: string = bfg_json.innerText;
+                let result = this.app.json.decode(bfg_json_string);
+                if (result) {
+                    this.app.bind('data', result);
+                }
+            }
+        }
     }
 
     boot(): void {

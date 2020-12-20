@@ -1,15 +1,9 @@
-import { ServiceProvider, ServiceProviderInterface } from "./ServiceProvider";
+import { ServiceProvider } from "./ServiceProvider";
 import { ApplicationContainer } from "./Application";
-export interface KernelInterface extends ServiceProviderInterface {
-    start: Number;
-    dev: boolean;
+export interface KernelInterface {
     globalize(): void;
 }
-export declare class Kernel extends ServiceProvider implements KernelInterface {
-    start: Number;
-    dev: boolean;
-    app: ApplicationContainer;
-    constructor(start: Number, dev?: boolean);
+export declare class Kernel extends ServiceProvider<ApplicationContainer> implements KernelInterface {
     register(): void;
     boot(): void;
     globalize(): void;

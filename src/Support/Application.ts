@@ -1,10 +1,12 @@
-import {ServiceProvider, ServiceProviderInterface} from "./ServiceProvider";
+import {ServiceProvider, ServiceProviderConstructor, ServiceProviderInterface} from "./ServiceProvider";
 
 interface _App<T> {
     bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean, compute?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
+    singleton(key: string, val: any): ApplicationContainer;
     compute(key: string, val: any): ApplicationContainer;
+    library(library: Function): ApplicationContainer;
     get(name: string|null, ...data: Array<any>): object;
-    has(name: string): boolean;
+    has(name: string|PropertyKey): boolean;
     forget(name: string): ApplicationContainer;
     resolve<K extends PropertyKey>(name: K): asserts this is ApplicationContainer<Id<K>>;
     on(event: string|Array<string>, name: string|Array<string>, cb: Function): ApplicationContainer;
@@ -13,8 +15,10 @@ interface _App<T> {
     on_resolve(name: string|Array<string>, cb: Function): ApplicationContainer;
     on_forget(name: string|Array<string>, cb: Function): ApplicationContainer;
     on_replace(name: string|Array<string>, cb: Function): ApplicationContainer;
-    provide(serviceProviderMethod: string): ApplicationContainer;
-    provider<SPI extends ServiceProviderInterface>(serviceProvider: SPI): SPI;
+    register_collection (serviceProviders: Array<ServiceProvider<ApplicationContainer>>): ApplicationContainer;
+    register <SPI>(serviceProvider: SPI): SPI;
+    provider <SPI extends ServiceProvider<ApplicationContainer>>(serviceProvider: SPI): SPI;
+    execute(serviceProviderMethod: string): ApplicationContainer;
     boot(): ApplicationContainer;
 }
 interface _Manipulators {
@@ -38,7 +42,9 @@ interface appItemCollect {
 
 type Id<T> = T extends infer U ? { [K in keyof U]: U[K]} : never;
 
-export declare type ApplicationContainer<T = {}> = Readonly<T> & _App<T> & _Manipulators;
+export interface AppInterface {}
+
+export declare type ApplicationContainer<T = {}> = Readonly<T> & _App<T> & _Manipulators & AppInterface;
 
 export interface EventAppInfo {
     name: string,
@@ -47,11 +53,7 @@ export interface EventAppInfo {
 
 function makeApp(): ApplicationContainer {
     const items: appItemCollect = {};
-    const isClass: Function = (data: any) => {
-        return String(data) === "[object Object]" &&
-            typeof data === 'function';
-    };
-    const providers: Array<ServiceProviderInterface> = [];
+    const providers: Array<ServiceProvider<ApplicationContainer>> = [];
     const eventFn: Function = <N extends string, E extends string,T>(name: N, event: E, data: T): T => {
 
         let event_fool: string = `on_${event}`;
@@ -96,7 +98,6 @@ function makeApp(): ApplicationContainer {
     const manipulators: Function = (target: any, proxxy: ApplicationContainer) => {
         return {
             bind (name: string, data: any, resolve: boolean = false, compute: boolean = false) {
-                //if (typeof data === 'object' && 'app' in data) data.app = target;
                 let dataItem: appItem = {data: resolve ? null : data, resolve: resolve ? data : false, resolved: false, compute};
                 if ((name in items)) {
 
@@ -111,8 +112,17 @@ function makeApp(): ApplicationContainer {
                 else { items[name] = eventFn(name, 'bind', dataItem); }
                 return proxxy;
             },
+            singleton (name: string, data: any) {
+                return proxxy.bind(name, data, true);
+            },
             compute (name: string, data: any) {
                 return proxxy.bind(name, data, false, true);
+            },
+            library (library: Function) {
+                if ('name' in library) {
+                    return proxxy.bind(library.name, new (library as any)(proxxy));
+                }
+                return proxxy;
             },
             get (name: string|null = null, ...data: Array<any>) {
                 return name ? getter(name, ...data) : items;
@@ -168,21 +178,30 @@ function makeApp(): ApplicationContainer {
             on_replace (name: string, cb: Function) {
                 return this.on('replace', name, cb);
             },
-            provider (serviceProvider: ServiceProviderInterface) {
+            register_collection (serviceProviders: Array<ServiceProviderConstructor>) {
+                serviceProviders.map((provider: ServiceProviderConstructor) => this.register(provider));
+                return proxxy;
+            },
+            register (serviceProvider: ServiceProviderConstructor) {
+                let registered = new (serviceProvider)(proxxy);
+                this.provider(registered);
+                return registered;
+            },
+            provider (serviceProvider: ServiceProviderInterface<ApplicationContainer>) {
                 serviceProvider.app = proxxy;
                 if ('boot' in serviceProvider) {
                     providers.push(serviceProvider);
                 }
-                if ('register' in serviceProvider) {
+                if ('register' in serviceProvider && typeof serviceProvider.register === 'function') {
                     serviceProvider.register();
                 }
                 return serviceProvider;
             },
             boot () {
-                return this.provide('boot');
+                return this.execute('boot');
             },
-            provide(serviceProviderMethod: string) {
-                providers.forEach((serviceProvider: ServiceProviderInterface) => {
+            execute(serviceProviderMethod: string) {
+                providers.forEach((serviceProvider: ServiceProviderInterface<ApplicationContainer>) => {
                     if (
                         serviceProviderMethod in serviceProvider &&
                         typeof (serviceProvider as any)[serviceProviderMethod] === 'function'
@@ -213,10 +232,13 @@ function makeApp(): ApplicationContainer {
             if (proxxy.has(p) && items[p].data === value) { return false; }
             manipulators(target, proxxy).bind(p, value);
             return true;
+        },
+        has <T>(target: T, p: PropertyKey): boolean {
+            return proxxy.has(p);
         }
     });
 
     return proxxy;
 }
 
-export const App: ApplicationContainer = makeApp();
+export default makeApp();

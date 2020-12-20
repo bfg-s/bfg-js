@@ -33,7 +33,7 @@ export class EventCollect implements EventInterface {
                     return EventCollect.global.fire(prop, ...data);
                 };
             },
-            set (target: Function, p: string, value: any, receiver: any) {
+            set (target: Function, p: string, value: any, receiver: any) {                                              
                 return EventCollect.global.on(p, value);
             },
             deleteProperty (target: Function, p: string) {

@@ -6,6 +6,7 @@ interface anyItems {
 
 export interface ObjInterface {
     app: ApplicationContainer
+    each (target: anyItems, callback: (item: any, key: string|Number) => any): anyItems
     get_start_with (target: anyItems, start: string): anyItems
     get_end_with (target: anyItems, start: string): anyItems
     flip<T>(trans: T): T
@@ -26,20 +27,93 @@ export class Obj implements ObjInterface {
 
     app: ApplicationContainer;
 
+    /**
+     * Obj constructor
+     * @param app
+     */
     constructor(app: ApplicationContainer) {
         this.app = app;
     }
 
+    /**
+     * Make observiable object
+     * @param target
+     * @param events
+     * @param revocable
+     */
+    observer <T extends object>(target?: T, events?: ProxyHandler<T>, revocable: boolean = false) {
+        return revocable ? new Proxy(target || {}, events || {}) :
+            Proxy.revocable(target || {}, events || {});
+    }
+
+    /**
+     * Get by dots
+     * @param str
+     * @param obj
+     */
+    get (str: string|number, obj: anyItems) {
+        return String(str).split('.').reduce(function(obj: anyItems, i: string) {
+            return obj[i];
+        }, obj);
+    }
+
+    /**
+     * Set by dots
+     * @param str
+     * @param value
+     * @param obj
+     */
+    set (str: string|number, value: any, obj: anyItems) {
+        let levels = String(str).split('.');
+        let max_level = levels.length - 1;
+        let target: any = obj;
+        levels.some(function (level, i) {
+            if (typeof level === 'undefined') {
+                return true;
+            }
+            if (i === max_level) {
+                target[level] = value;
+            } else {
+                let obj = target[level] || {};
+                target[level] = obj;
+                target = obj;
+            }
+        });
+    }
+
+    /**
+     * Each object or array
+     * @param target
+     * @param callback
+     */
+    each(target: anyItems, callback: (item: any, key: string|Number) => any): anyItems {
+        let resultTarget: anyItems = Array.isArray(target) ? [] : {};
+        Object.keys(target).map((k: string) => resultTarget[k] = callback(target[k], k));
+        return resultTarget;
+    }
+
+    /**
+     * Get data with needle start
+     * @param target
+     * @param start
+     */
     get_start_with (target: anyItems, start: string) {
         let result: any = null;
+        start = start.replace(/\*/g, '00110011');
         Object.keys(target).map((b) => {
-            if (!result && this.app.str.start_with(target[b], start)) {
+
+            if (!result && this.app.str.start_with(target[b].replace(/\*/g, '00110011'), start)) {
                 result = target[b];
             }
         });
         return result;
     }
 
+    /**
+     * Get data with needle end
+     * @param target
+     * @param end
+     */
     get_end_with (target: anyItems, end: string) {
         let result: any = null;
         Object.keys(target).map((b) => {
@@ -72,21 +146,21 @@ export class Obj implements ObjInterface {
      * Get object or array a first key
      * @param target
      */
-    first_key (target: Array<any>|object) {
+    first_key (target: Array<any>|object): PropertyKey {
 
         let keys: Array<string> = Object.keys(target);
-        return 0 in keys ? keys[0] : null;
+        return (0 in keys ? keys[0] : null) as PropertyKey;
     }
 
     /**
      * Get object or array a last key
      * @param target
      */
-    last_key (target: Array<any>|object) {
+    last_key (target: Array<any>|object): PropertyKey {
 
         let keys: Array<string> = Object.keys(target);
         let last_index = keys.length - 1;
-        return last_index in keys ? keys[last_index] : null;
+        return (last_index in keys ? keys[last_index] : null) as PropertyKey;
     }
 
     /**
@@ -97,7 +171,7 @@ export class Obj implements ObjInterface {
 
         let key = this.first_key(target);
 
-        return key ? target[key] : null;
+        return key ? target[key as string] : null;
     }
 
     /**
@@ -108,7 +182,7 @@ export class Obj implements ObjInterface {
 
         let key = this.last_key(target);
 
-        return key ? target[key] : null;
+        return key ? target[key as string] : null;
     }
 
     /**
