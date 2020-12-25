@@ -1,6 +1,6 @@
 {
   "name": "bfg-js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "bundle/index.js",
   "types": "src/index.d.ts",
   "repository": "https://github.com/bgf-s/bfg-js",
