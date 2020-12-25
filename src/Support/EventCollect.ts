@@ -65,11 +65,17 @@ export class EventCollect implements EventInterface {
                 this.events[name] = [];
             }
 
-            if (typeof cb === 'function') {
+            let has = false;
+
+            this.events[name].map((fn) => {
+                if (!has) has = fn === cb;
+            });
+
+            if (typeof cb === 'function' && !has) {
                 this.events[name].push(cb);
             }
 
-            else if (Array.isArray(cb)) {
+            else if (Array.isArray(cb) && !has) {
                 cb.map((cbb: Function) => {
                     if (typeof cbb === 'function') {
                         this.events[name].push(cbb);

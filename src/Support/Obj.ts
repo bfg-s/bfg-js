@@ -35,6 +35,14 @@ export class Obj implements ObjInterface {
         this.app = app;
     }
 
+    getElementAttrs (el: HTMLElement) {
+        let result: anyItems = {};
+        [].slice.call(el.attributes).map((attr: Attr) => {
+            result[attr.name] = attr.value;
+        });
+        return result;
+    }
+
     /**
      * Make observiable object
      * @param target
@@ -44,6 +52,10 @@ export class Obj implements ObjInterface {
     observer <T extends object>(target?: T, events?: ProxyHandler<T>, revocable: boolean = false) {
         return revocable ? new Proxy(target || {}, events || {}) :
             Proxy.revocable(target || {}, events || {});
+    }
+
+    has (str: string|number, obj: anyItems) {
+        return String(str).split('.').reduce((o,i)=>o[i], obj);
     }
 
     /**

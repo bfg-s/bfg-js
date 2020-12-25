@@ -27,6 +27,7 @@ export declare class Obj implements ObjInterface {
      * @param app
      */
     constructor(app: ApplicationContainer);
+    getElementAttrs(el: HTMLElement): anyItems;
     /**
      * Make observiable object
      * @param target
@@ -34,6 +35,7 @@ export declare class Obj implements ObjInterface {
      * @param revocable
      */
     observer<T extends object>(target?: T, events?: ProxyHandler<T>, revocable?: boolean): {};
+    has(str: string | number, obj: anyItems): any;
     /**
      * Get by dots
      * @param str

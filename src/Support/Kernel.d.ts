@@ -10,5 +10,4 @@ export declare class Kernel extends ServiceProvider<ApplicationContainer> implem
     static version(): string;
     static sys(): "browser" | "node";
     static os(): string;
-    static token(): string;
 }

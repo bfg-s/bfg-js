@@ -30,7 +30,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         this.app.bind('system', Kernel.sys, true);
         this.app.bind('log', new Log(this.app));
         this.app.bind('version', Kernel.version, true);
-        this.app.bind('token', Kernel.token);
+        this.app.compute('token', () => this.app.server.token);
         this.app.bind('os', Kernel.os, true);
         this.app.bind('str', new Str());
         this.app.bind('obj', new Obj(this.app));
@@ -104,11 +104,5 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         }
 
         return os;
-    }
-
-    static token () {
-
-        let token = document.querySelector('meta[name="csrf-token"]');
-        return token ? token.getAttribute('content') : null;
     }
 }

@@ -7,6 +7,11 @@ export interface StrInterface {
 }
 export declare class Str {
     /**
+     * Convert html text to nodes
+     * @param html
+     */
+    to_nodes(html: string): any[] & NodeListOf<ChildNode>;
+    /**
      * Preg match all how in PHP
      * @param pattern
      * @param str

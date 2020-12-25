@@ -10,6 +10,16 @@ export interface StrInterface {
 export class Str {
 
     /**
+     * Convert html text to nodes
+     * @param html
+     */
+    to_nodes (html: string) {
+        let div = document.createElement('div');
+        div.innerHTML = html.trim();
+        return Object.assign([], div.childNodes);
+    }
+
+    /**
      * Preg match all how in PHP
      * @param pattern
      * @param str
