@@ -13,7 +13,6 @@ declare global {
 if (!App.has('start')) {
 
     App.register(Kernel);
-        //.globalize();
 }
 
 
