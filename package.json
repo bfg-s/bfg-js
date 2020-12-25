@@ -1,6 +1,7 @@
 {
   "name": "bfg-js",
   "version": "1.0.4",
+  "description": "Global container",
   "main": "bundle/index.js",
   "types": "src/index.d.ts",
   "repository": "https://github.com/bgf-s/bfg-js",
