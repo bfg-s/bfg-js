@@ -6,6 +6,7 @@ import {Log, LogInterface} from "./Log";
 import {EventCollect, EventInterface} from "./EventCollect";
 import {Json, JsonInterface} from "./Json";
 import {ApplicationContainer} from "./Application";
+import {Request} from "./Request";
 
 export interface KernelInterface {
     globalize(): void
@@ -22,6 +23,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         if (process.env.NODE_ENV === 'development') {
             dev = true;
         }
+        this.app.register(Request);
         this.app.bind('start', (new Date()).getTime());
         this.app.bind('env', process.env.NODE_ENV);
         this.app.bind('dev', dev);

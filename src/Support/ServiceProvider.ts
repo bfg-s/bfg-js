@@ -1,5 +1,4 @@
 import {ApplicationContainer} from "./Application";
-import {anyObject} from "bfg-commander";
 
 export interface ServiceProviderInterface<T> {
     app: T
