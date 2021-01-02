@@ -38,9 +38,10 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         this.app.bind('obj', new Obj(this.app));
         this.app.bind('num', new Num());
         this.app.bind('json', new Json());
+        this.app.bind('is_browser', String(this.app.system) === 'browser');
         this.app.bind('data', {});
 
-        if (String(this.app.system) === 'browser') {
+        if (this.app.is_browser) {
             let bfg_json = document.getElementById('bfg-page-json');
             if (bfg_json) {
                 let bfg_json_string: string = bfg_json.innerText;
@@ -49,6 +50,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
                     this.app.bind('data', result);
                 }
             }
+            document.dispatchEvent(new CustomEvent(`bfg:register`, {detail: this.app}));
         }
     }
 

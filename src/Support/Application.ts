@@ -209,6 +209,11 @@ function makeApp(): ApplicationContainer {
                         (serviceProvider as any)[serviceProviderMethod](proxxy);
                     }
                 });
+                if (typeof Window !== 'undefined') {
+                    document.dispatchEvent(
+                        new CustomEvent(`bfg:${serviceProviderMethod}`, {detail: proxxy})
+                    );
+                }
                 return proxxy;
             }
         }
