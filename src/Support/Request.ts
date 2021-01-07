@@ -1,4 +1,5 @@
-import {ServiceProvider, ApplicationContainer} from "bfg-js";
+import {ServiceProvider} from "./ServiceProvider";
+import {ApplicationContainer} from "./Application";
 
 export interface anyObject {
     [key: string]: any;

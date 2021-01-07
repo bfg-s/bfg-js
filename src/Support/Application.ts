@@ -201,6 +201,11 @@ function makeApp(): ApplicationContainer {
                 return this.execute('boot');
             },
             execute(serviceProviderMethod: string) {
+                if (typeof Window !== 'undefined') {
+                    document.dispatchEvent(
+                        new CustomEvent(`bfg:${serviceProviderMethod}`, {detail: proxxy})
+                    );
+                }
                 providers.forEach((serviceProvider: ServiceProviderInterface<ApplicationContainer>) => {
                     if (
                         serviceProviderMethod in serviceProvider &&
@@ -209,11 +214,6 @@ function makeApp(): ApplicationContainer {
                         (serviceProvider as any)[serviceProviderMethod](proxxy);
                     }
                 });
-                if (typeof Window !== 'undefined') {
-                    document.dispatchEvent(
-                        new CustomEvent(`bfg:${serviceProviderMethod}`, {detail: proxxy})
-                    );
-                }
                 return proxxy;
             }
         }
