@@ -1,4 +1,5 @@
 import {ServiceProvider, ServiceProviderConstructor, ServiceProviderInterface} from "./ServiceProvider";
+import {anyObject} from "./Request";
 
 interface _App<T> {
     bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean, compute?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
@@ -123,6 +124,17 @@ function makeApp(): ApplicationContainer {
                     return proxxy.bind(library.name, new (library as any)(proxxy));
                 }
                 return proxxy;
+            },
+            inject (obj: anyObject) {
+                obj.app = proxxy;
+                proxxy.obj.getMethods(obj).map((fn: string) => {
+                    let d = fn.split(':');
+                    let v = null, m: string = 'bind';
+                    if (d.length === 1) { v = d[0]; m = 'bind'; }
+                    else { v = d[1]; m = d[0]; }
+                    if (m!=='bind' && m!=='singleton' && m!=='compute') { m='bind'; }
+                    if (m && v) { proxxy[m](v, obj[fn]); }
+                });
             },
             get (name: string|null = null, ...data: Array<any>) {
                 return name ? getter(name, ...data) : items;

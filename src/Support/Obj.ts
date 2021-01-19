@@ -35,6 +35,14 @@ export class Obj implements ObjInterface {
         this.app = app;
     }
 
+    getMethods (obj: anyItems) {
+        let res = [];
+        for(let m in obj) {
+            res.push(m);
+        }
+        return res;
+    }
+
     getElementAttrs (el: HTMLElement) {
         let result: anyItems = {};
         [].slice.call(el.attributes).map((attr: Attr) => {

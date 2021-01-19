@@ -27,6 +27,7 @@ export declare class Obj implements ObjInterface {
      * @param app
      */
     constructor(app: ApplicationContainer);
+    getMethods(obj: anyItems): string[];
     getElementAttrs(el: HTMLElement): anyItems;
     /**
      * Make observiable object
