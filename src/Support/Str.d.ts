@@ -10,7 +10,7 @@ export declare class Str {
      * Convert html text to nodes
      * @param html
      */
-    to_nodes(html: string): any[] & NodeListOf<ChildNode>;
+    to_nodes(html: any): any;
     /**
      * Preg match all how in PHP
      * @param pattern

@@ -13,7 +13,8 @@ export class Str {
      * Convert html text to nodes
      * @param html
      */
-    to_nodes (html: string) {
+    to_nodes (html: any) {
+        if (typeof html !== 'string') { return html; }
         let div = document.createElement('div');
         div.innerHTML = html.trim();
         return Object.assign([], div.childNodes);
