@@ -7,6 +7,8 @@ import {EventCollect, EventInterface} from "./EventCollect";
 import {Json, JsonInterface} from "./Json";
 import {ApplicationContainer} from "./Application";
 import {Request} from "./Request";
+import {Caller} from "./Caller";
+import {Doc} from "./Doc";
 
 export interface KernelInterface {
     globalize(): void
@@ -37,9 +39,11 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         this.app.bind('str', new Str());
         this.app.bind('obj', new Obj(this.app));
         this.app.bind('num', new Num());
+        this.app.bind('doc', new Doc());
         this.app.bind('json', new Json());
         this.app.bind('is_browser', String(this.app.system) === 'browser');
         this.app.bind('data', {});
+        this.app.inject(new Caller());
 
         if (this.app.is_browser) {
             let bfg_json = document.getElementById('bfg-page-json');
@@ -50,6 +54,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
                     this.app.bind('data', result);
                 }
             }
+            window.bfg=true;
             document.dispatchEvent(new CustomEvent(`bfg:register`, {detail: this.app}));
         }
     }
@@ -68,7 +73,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
 
     static version () {
 
-        return "1.0.0";
+        return "1.0.8";
     }
 
     static sys () {

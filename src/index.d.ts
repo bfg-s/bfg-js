@@ -5,6 +5,7 @@ declare global {
     }
     interface Window {
         app?: ApplicationContainer;
+        bfg?: boolean;
     }
 }
 export interface ApplicationInterface extends ApplicationContainer {

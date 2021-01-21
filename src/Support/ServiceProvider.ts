@@ -18,25 +18,5 @@ export abstract class ServiceProvider<T extends ApplicationContainer> implements
 
     constructor(
         public app: T
-    ) {
-        if ('require' in this && typeof this.require === 'object') {
-            for (let ext of this.require) {
-                if (!app.has(`ext_${ext}`)) {
-                    app.log.error(`Don't have a module [${ext}]`);
-                    return {} as this;
-                }
-            }
-            // let i: number;
-            // for (i; i <= require.length; i++) {
-            //     let ext = (require as anyObject)[i];
-            //     if (!app.has(`ext_${ext}`)) {
-            //         app.log.error(`Don't have a module [${ext}]`);
-            //         return {} as this;
-            //     }
-            // }
-        }
-        if ('name' in this) {
-            app.bind(`ext_${this.name}`, true)
-        }
-    }
+    ) {}
 }

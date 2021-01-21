@@ -6,6 +6,7 @@ interface _App<T> {
     singleton(key: string, val: any): ApplicationContainer;
     compute(key: string, val: any): ApplicationContainer;
     library(library: Function): ApplicationContainer;
+    inject(obj: anyObject): ApplicationContainer;
     get(name: string|null, ...data: Array<any>): object;
     has(name: string|PropertyKey): boolean;
     forget(name: string): ApplicationContainer;
@@ -133,7 +134,7 @@ function makeApp(): ApplicationContainer {
                     if (d.length === 1) { v = d[0]; m = 'bind'; }
                     else { v = d[1]; m = d[0]; }
                     if (m!=='bind' && m!=='singleton' && m!=='compute') { m='bind'; }
-                    if (m && v) { proxxy[m](v, obj[fn]); }
+                    if (m && v) { proxxy[m](v, obj[fn].bind(proxxy)); }
                 });
             },
             get (name: string|null = null, ...data: Array<any>) {

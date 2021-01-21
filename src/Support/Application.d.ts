@@ -1,9 +1,11 @@
 import { ServiceProvider } from "./ServiceProvider";
+import { anyObject } from "./Request";
 interface _App<T> {
     bind<K extends PropertyKey, V>(key: K, val: V, resolve?: boolean, compute?: boolean): asserts this is ApplicationContainer<Id<T & Record<K, V>>>;
     singleton(key: string, val: any): ApplicationContainer;
     compute(key: string, val: any): ApplicationContainer;
     library(library: Function): ApplicationContainer;
+    inject(obj: anyObject): ApplicationContainer;
     get(name: string | null, ...data: Array<any>): object;
     has(name: string | PropertyKey): boolean;
     forget(name: string): ApplicationContainer;

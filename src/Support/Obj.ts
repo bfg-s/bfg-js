@@ -72,8 +72,8 @@ export class Obj implements ObjInterface {
      * @param obj
      */
     get (str: string|number, obj: anyItems) {
-        return String(str).split('.').reduce(function(obj: anyItems, i: string) {
-            return obj[i];
+        return String(str).split('.').reduce((obj: anyItems, i: string) => {
+            return obj[i] !== undefined ? obj[i] : undefined;
         }, obj);
     }
 
