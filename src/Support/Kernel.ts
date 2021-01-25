@@ -8,7 +8,6 @@ import {Json, JsonInterface} from "./Json";
 import {ApplicationContainer} from "./Application";
 import {Request} from "./Request";
 import {Caller} from "./Caller";
-import {Doc} from "./Doc";
 
 export interface KernelInterface {
     globalize(): void
@@ -39,7 +38,6 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         this.app.bind('str', new Str());
         this.app.bind('obj', new Obj(this.app));
         this.app.bind('num', new Num());
-        this.app.bind('doc', new Doc());
         this.app.bind('json', new Json());
         this.app.bind('is_browser', String(this.app.system) === 'browser');
         this.app.bind('data', {});

@@ -45,18 +45,19 @@ export class Request extends ServiceProvider<ApplicationContainer> {
                 xhr.open(params.method || "GET", params.url || window.location.href);
                 xhr.setRequestHeader('X-CSRF-TOKEN', params.token || this.app.server.token);
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                if (params.headers) {
+                    Object.keys(params.headers).map(key => {
+                        xhr.setRequestHeader(key, params.headers[key]);
+                    });
+                }
                 let is_json = false;
                 if (typeof params.body === 'object' && !(params.body instanceof FormData)) {
                     is_json = true;
                     xhr.setRequestHeader('Content-Type', 'application/json');
                     params.body = this.app.json.encode(params.body);
                 }
+
                 xhr.send(params.body);
-                if (params.headers) {
-                    Object.keys(params.headers).forEach(key => {
-                        xhr.setRequestHeader(key, params.headers[key]);
-                    });
-                }
                 xhr.onload = () => {
                     if (xhr.status >= 200 && xhr.status < 300) {
                         //xhr.getResponseHeader('X-CSRF-TOKEN');
