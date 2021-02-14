@@ -41,7 +41,7 @@ export class Kernel extends ServiceProvider<ApplicationContainer> implements Ker
         this.app.bind('json', new Json());
         this.app.bind('is_browser', String(this.app.system) === 'browser');
         this.app.bind('data', {});
-        this.app.inject(new Caller());
+        this.app.bind('call', (new Caller()).make(this.app));
 
         if (this.app.is_browser) {
             let bfg_json = document.getElementById('bfg-page-json');

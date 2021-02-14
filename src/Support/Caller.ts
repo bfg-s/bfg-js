@@ -1,34 +1,73 @@
 import {anyObject} from "./Request";
+import {ApplicationContainer} from "./Application";
 
 export class Caller {
 
     [key: string]: any;
 
-    call (command: string|anyObject, ...value: Array<any>) {
+    make (app: ApplicationContainer) {
 
-        if (typeof command === 'string') {
+        return (command: string|anyObject, ...value: Array<any>) => {
 
-            // String(command).split('.').reduce((obj: anyItems, i: string) => {
-            //     return obj[i] !== undefined ? obj[i] : undefined;
-            // }, this);
+            if (typeof command === 'string') {
 
-            // console.log(this.obj.get(command, this));
+                let obj: any = app,
+                    context = {},
+                    chunks = String(command).split('.'),
+                    chunks_last_index = chunks.length-1;
 
-            this.obj.get(command, this)(...value);
-        }
+                chunks.map((p: string, i: number) => {
+                    if (obj) {
 
-        else if (Array.isArray(command)) {
+                        let d = obj[p];
 
-            this.obj.each(command, (commande: Array<any>) => {
-                this.call(commande[0], ...(!Array.isArray(commande[1]) ? [commande[1]] : commande[1]));
-            });
-        }
+                        if (i === chunks_last_index) {
 
-        else if (typeof command === 'object') {
+                            context = obj;
+                        }
 
-            this.obj.each(command, (props: Array<any>, commande: string) => {
-                this.call(commande, ...(!Array.isArray(props) ? [props] : props));
-            });
+                        obj = obj[p];
+                    }
+                });
+
+                if (typeof obj === 'function') {
+                    obj.apply(context, value);
+                } else {
+                    app.log.error(`Command ${command} not found!`);
+                }
+            }
+
+            else if (Array.isArray(command)) {
+
+                try {
+
+                    app.obj.each(command, (commande: Array<any>) => {
+
+                        let d = !Array.isArray(commande[1]) ? [commande[1]] : commande[1];
+                        app.call(commande[0], ...d);
+                    });
+
+                } catch (e) {
+
+                    console.error(e);
+                }
+            }
+
+            else if (typeof command === 'object') {
+
+                try {
+
+                    app.obj.each(command, (props: Array<any>, commande: string) => {
+
+                        let d = !Array.isArray(props) ? [props] : props;
+                        app.call(commande, ...d);
+                    });
+
+                } catch (e) {
+
+                    console.error(e);
+                }
+            }
         }
     }
 }

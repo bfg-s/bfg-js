@@ -35,6 +35,25 @@ export class Obj implements ObjInterface {
         this.app = app;
     }
 
+    filter (obj: anyItems, eq: any): any {
+        let result: Array<any> = [];
+        this.each(obj, (item: any, key: string) => {
+            if (typeof eq === 'function') {
+                if (eq(item, key)) result.push(item);
+            } else if (Array.isArray(eq)) {
+                if (item[eq[0]] == eq[1]) result.push(item);
+            } else {
+                if (item == eq) result.push(item);
+            }
+        });
+        return result;
+    }
+
+    find (obj: anyItems, eq: any) {
+
+        return this.first(this.filter(obj, eq));
+    }
+
     getMethods (obj: anyItems) {
         let res = [];
         for(let m in obj) {

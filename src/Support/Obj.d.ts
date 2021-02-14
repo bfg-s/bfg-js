@@ -27,6 +27,8 @@ export declare class Obj implements ObjInterface {
      * @param app
      */
     constructor(app: ApplicationContainer);
+    filter(obj: anyItems, eq: any): any;
+    find(obj: anyItems, eq: any): any;
     getMethods(obj: anyItems): string[];
     getElementAttrs(el: HTMLElement): anyItems;
     /**
